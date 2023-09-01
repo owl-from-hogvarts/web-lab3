@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style type="text/css">
+      :root {
+        --color-accent: #f3e7be;
+        --color-background: #1450a3;
+        --color-background-light: #337CCF;
+        --color-background-dark: #191d88;
+      }
+      
+      * {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        outline: 0;
+        color: var(--color-accent);
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        font-size: 16px;
+        width: 100%;
+        background-color: var(--color-background);
+      }
+
+      header {
+        font-size: 1.5rem;
+        display: flex;
+        width: 100%;
+        background-color: var(--color-background-dark);
+        padding: 1rem;
+      }
+
+      author {
+        display: flex;
+        flex-direction: column;
+      }
+
+      info {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      main {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.5rem;
+      }
+
+      .rounded {
+        border-radius: 0.5rem;
+        box-shadow: 0 0 0.2rem var(--color-background-dark);
+      }
+
+      main plot {
+        display: flex;
+        width: 30%;
+      }
+
+      main plot::after {
+        content: "";
+        display: block;
+        padding-bottom: 100%;
+      }
+
+      main button {
+        background-color: var(--color-background-dark);
+        padding: 0.7rem;
+        font-size: 1rem;
+        min-width: 3rem;
+        cursor: pointer;
+        user-select: none;
+        transition: background-color 0.2s;
+      }
+
+      main button:hover {
+        background-color: var(--color-background-light);
+        transition: background-color 0.2s;
+      }
+
+      main settings {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      main field {
+        flex-wrap: wrap;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      main field > label {
+        min-width: 5rem;
+      }
+      
+      main field content {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      main field content input[type=text] {
+        border-radius: 0.5rem;
+        background-color: var(--color-background-dark);
+        padding: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <author>
+        <name> Тернавский Костя </name>
+        <info>
+          <group> P3206 </group>
+          <variant> 1627 </variant>
+        </info>
+      </author>
+    </header>
+    <main>
+      <plot class="rounded"> </plot>
+      <settings>
+        <field>
+          <label for="">Point(X):</label>
+          <content>
+            <button class="rounded">-3</button>
+            <button class="rounded">-2</button>
+            <button class="rounded">-1</button>
+            <button class="rounded">0</button>
+            <button class="rounded">1</button>
+            <button class="rounded">2</button>
+            <button class="rounded">3</button>
+            <button class="rounded">4</button>
+            <button class="rounded">5</button>  
+          </content>
+        </field>
+        <field>
+          <label for="">Point(Y):</label>
+          <content>
+            <input class="rounded" type="text">
+          </content>
+        </field>
+        <field>
+          <label for="">Scale</label>
+          <content>
+            <scale>
+              <input type="checkbox" name="" id="">
+              <label for="">1</label>
+            </scale>
+            <scale>
+              <input type="checkbox" name="" id="">
+              <label for="">1.5</label>
+            </scale>
+            <scale>
+              <input type="checkbox" name="" id="">
+              <label for="">2</label>
+            </scale>
+            <scale>
+              <input type="checkbox" name="" id="">
+              <label for="">2.5</label>
+            </scale>
+            <scale>
+              <input type="checkbox" name="" id="">
+              <label for="">3</label>
+            </scale>
+          </content>
+        </field>
+        <button class="rounded">Process!</button>
+      </settings>
+    </main>
+  </body>
+</html>
