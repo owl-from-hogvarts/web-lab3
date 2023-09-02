@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <script defer src="./build/index.js"></script>
     <style type="text/css">
       :root {
         --color-accent: #f3e7be;
@@ -62,13 +63,13 @@
 
       main plot {
         display: flex;
-        width: 30%;
+        width: 30rem;
+        height: 30rem;
       }
 
-      main plot::after {
-        content: "";
-        display: block;
-        padding-bottom: 100%;
+      main plot>#plot {
+        width: 100%;
+        height: 100%;
       }
 
       main button {
@@ -127,7 +128,9 @@
       </author>
     </header>
     <main>
-      <plot class="rounded"> </plot>
+      <plot class="rounded">
+        <canvas id="plot" width="480" height="480"></canvas>
+      </plot>
       <settings>
         <field>
           <label for="">Point(X):</label>
