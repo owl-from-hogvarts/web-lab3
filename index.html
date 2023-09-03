@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <script defer src="./build/index.js"></script>
+    <script type="module" defer src="./build/index.js"></script>
     <style type="text/css">
       :root {
         --color-accent: #f3e7be;
@@ -174,20 +174,20 @@
       <plot class="rounded">
         <canvas id="plot" width="480" height="480"></canvas>
       </plot>
-      <form action="/figure/intersect" method="get">
+      <form method="get" id="intersect-input-form">
         <settings>
-          <field>
+          <field id="input-point-x">
             <label>Point(X):</label>
             <content>
-              <button type="button" class="rounded">-3</button>
-              <button type="button" class="rounded">-2</button>
-              <button type="button" class="rounded">-1</button>
-              <button type="button" class="rounded">0</button>
-              <button type="button" class="rounded">1</button>
-              <button type="button" class="rounded">2</button>
-              <button type="button" class="rounded">3</button>
-              <button type="button" class="rounded">4</button>
-              <button type="button" class="rounded">5</button>
+              <button type="button" class="rounded" value="-3">-3</button>
+              <button type="button" class="rounded" value="-2">-2</button>
+              <button type="button" class="rounded" value="-1">-1</button>
+              <button type="button" class="rounded" value="0">0</button>
+              <button type="button" class="rounded" value="1">1</button>
+              <button type="button" class="rounded" value="2">2</button>
+              <button type="button" class="rounded" value="3">3</button>
+              <button type="button" class="rounded" value="4">4</button>
+              <button type="button" class="rounded" value="5">5</button>
             </content>
           </field>
           <field>
@@ -201,7 +201,7 @@
               />
             </content>
           </field>
-          <field>
+          <field id="scale-input">
             <label>Scale</label>
             <content>
               <scale>
