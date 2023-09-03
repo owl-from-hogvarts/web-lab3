@@ -19,10 +19,10 @@ const API_INTERSECT_ENDPOINT = "/intersect"
 
 const formData: TFormData = {
   point: {
-    x: +(url.searchParams.get(POINT_X_URL_ID) ?? 0),
-    y: +(url.searchParams.get(POINT_Y_URL_ID) ?? 0),
+    x: Number(url.searchParams.get(POINT_X_URL_ID) ?? 0),
+    y: Number(url.searchParams.get(POINT_Y_URL_ID) ?? 0),
   },
-  scale: +(url.searchParams.get(SCALE_URL_ID) ?? 1)
+  scale: Number(url.searchParams.get(SCALE_URL_ID) ?? 1)
 }
 
 const pointXInput = form.querySelector("#input-point-x") as HTMLDivElement
@@ -33,7 +33,7 @@ pointXInput.addEventListener("click", (event) => {
   }
 
   const value = event.target.getAttribute("value")!
-  formData.point.x = +value
+  formData.point.x = Number(value)
 
   updateUrl(formData)
 })
@@ -42,7 +42,7 @@ const pointYInput = form.querySelector("#input-point-y")! as HTMLInputElement
 pointYInput.value = formData.point.y.toString()
 pointYInput.addEventListener("input", (event) => {
   const input = event.target as HTMLInputElement
-  const pointY = parseFloat(input.value)
+  const pointY = Number(input.value)
 
   if (input.value.length != 0 && Number.isNaN(pointY)) {
     input.setCustomValidity(`Should be number like 123.456, got ${input.value}`)
@@ -77,7 +77,7 @@ scaleInput.addEventListener("click", (event) => {
   }
 
   const { target } = event
-  const scale = +target.value
+  const scale = Number(target.value)
   formData.scale = scale;
 
   updateCheckbox(checkboxes, target.value)
