@@ -1,7 +1,10 @@
+
+import "./data.js";
+
 const canvas = document.querySelector("#plot") as HTMLCanvasElement;
 const context = canvas.getContext("2d")!;
 
-type Position = { x: number; y: number };
+export type Position = { x: number; y: number };
 type UnitMark = Position & {label: string, isHorizontal: boolean}
 
 const canvasWidth = canvas.clientWidth;
