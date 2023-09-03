@@ -9,10 +9,12 @@
       :root {
         --color-accent: #f3e7be;
         --color-background: #1450a3;
-        --color-background-light: #337CCF;
+        --color-background-light: #337ccf;
         --color-background-dark: #191d88;
+        --color-error: #FFB7B7;
+        --color-success: #96C291;
       }
-      
+
       * {
         margin: 0;
         padding: 0;
@@ -67,7 +69,7 @@
         height: 30rem;
       }
 
-      main plot>#plot {
+      main plot > #plot {
         width: 100%;
         height: 100%;
       }
@@ -103,17 +105,58 @@
       main field > label {
         min-width: 5rem;
       }
-      
+
       main field content {
         display: flex;
         gap: 0.5rem;
         flex-wrap: wrap;
       }
 
-      main field content input[type=text] {
+      main field content input[type="text"] {
         border-radius: 0.5rem;
         background-color: var(--color-background-dark);
         padding: 0.5rem;
+        transition: background-color 0.2s;
+
+        &:invalid {
+          background-color: var(--color-error);
+          transition: background-color 0.2s;
+        }
+      }
+
+      main results-container {
+        overflow-x: auto;
+
+        & #results-table {
+          border-collapse: collapse;
+          overflow: hidden;
+
+          & tr {
+            border-bottom: 0.1rem solid var(--color-background-light);
+          }
+
+          & th,
+          & td {
+            text-align: center;
+          }
+
+          & thead {
+            & th {
+              padding: 0.5rem;
+              /* border: 0.1rem solid var(--color-background-light); */
+            }
+          }
+
+          & tbody {
+            & tr:last-child {
+              border-bottom: none;
+            }
+
+            & td {
+              padding: 0.3rem;
+            }
+          }
+        }
       }
     </style>
   </head>
@@ -131,54 +174,101 @@
       <plot class="rounded">
         <canvas id="plot" width="480" height="480"></canvas>
       </plot>
-      <settings>
-        <field>
-          <label for="">Point(X):</label>
-          <content>
-            <button class="rounded">-3</button>
-            <button class="rounded">-2</button>
-            <button class="rounded">-1</button>
-            <button class="rounded">0</button>
-            <button class="rounded">1</button>
-            <button class="rounded">2</button>
-            <button class="rounded">3</button>
-            <button class="rounded">4</button>
-            <button class="rounded">5</button>  
-          </content>
-        </field>
-        <field>
-          <label for="">Point(Y):</label>
-          <content>
-            <input class="rounded" type="text">
-          </content>
-        </field>
-        <field>
-          <label for="">Scale</label>
-          <content>
-            <scale>
-              <input type="checkbox" name="" id="">
-              <label for="">1</label>
-            </scale>
-            <scale>
-              <input type="checkbox" name="" id="">
-              <label for="">1.5</label>
-            </scale>
-            <scale>
-              <input type="checkbox" name="" id="">
-              <label for="">2</label>
-            </scale>
-            <scale>
-              <input type="checkbox" name="" id="">
-              <label for="">2.5</label>
-            </scale>
-            <scale>
-              <input type="checkbox" name="" id="">
-              <label for="">3</label>
-            </scale>
-          </content>
-        </field>
-        <button class="rounded">Process!</button>
-      </settings>
+      <form action="/figure/intersect" method="get">
+        <settings>
+          <field>
+            <label>Point(X):</label>
+            <content>
+              <button type="button" class="rounded">-3</button>
+              <button type="button" class="rounded">-2</button>
+              <button type="button" class="rounded">-1</button>
+              <button type="button" class="rounded">0</button>
+              <button type="button" class="rounded">1</button>
+              <button type="button" class="rounded">2</button>
+              <button type="button" class="rounded">3</button>
+              <button type="button" class="rounded">4</button>
+              <button type="button" class="rounded">5</button>
+            </content>
+          </field>
+          <field>
+            <label for="input-point-y">Point(Y):</label>
+            <content>
+              <input
+                class="rounded"
+                type="text"
+                id="input-point-y"
+                name="pointY"
+              />
+            </content>
+          </field>
+          <field>
+            <label>Scale</label>
+            <content>
+              <scale>
+                <input
+                  type="checkbox"
+                  name="scale"
+                  value="1"
+                  id="scale-1"
+                  checked
+                />
+                <label for="scale-1">1</label>
+              </scale>
+              <scale>
+                <input
+                  type="checkbox"
+                  name="scale"
+                  value="1.5"
+                  id="scale-1.5"
+                />
+                <label for="scale-1.5">1.5</label>
+              </scale>
+              <scale>
+                <input type="checkbox" name="scale" value="2" id="scale-2" />
+                <label for="scale-2">2</label>
+              </scale>
+              <scale>
+                <input
+                  type="checkbox"
+                  name="scale"
+                  value="2.5"
+                  id="scale-2.5"
+                />
+                <label for="scale-2.5">2.5</label>
+              </scale>
+              <scale>
+                <input type="checkbox" name="scale" value="3" id="scale-3" />
+                <label for="scale-3">3</label>
+              </scale>
+            </content>
+          </field>
+          <button class="rounded" type="submit">Process!</button>
+        </settings>
+      </form>
+      <results-container class="rounded">
+        <table id="results-table">
+          <thead>
+            <tr>
+              <th>Point(x)</th>
+              <th>Point(y)</th>
+              <th>Scale</th>
+              <th>Result</th>
+              <th>Current Time</th>
+              <th>Calculation Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>a</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </results-container>
     </main>
   </body>
 </html>
