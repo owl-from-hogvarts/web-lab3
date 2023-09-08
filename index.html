@@ -8,10 +8,12 @@
     <style type="text/css">
       :root {
         --color-accent: #f3e7be;
+        --color-accent-contrast: #163B08;
         --color-background: #1450a3;
         --color-background-light: #337ccf;
         --color-background-dark: #191d88;
         --color-error: #FFB7B7;
+        --color-error-accent: #570000;
         --color-success: #96C291;
       }
 
@@ -85,7 +87,14 @@
       }
 
       main button:hover {
+        cursor: pointer;
         background-color: var(--color-background-light);
+        transition: background-color 0.2s;
+      }
+
+      main button.active {
+        background-color: var(--color-success);
+        color: var(--color-accent-contrast);
         transition: background-color 0.2s;
       }
 
@@ -119,6 +128,7 @@
         transition: background-color 0.2s;
 
         &:invalid {
+          color: var(--color-error-accent);
           background-color: var(--color-error);
           transition: background-color 0.2s;
         }
@@ -155,6 +165,33 @@
             & td {
               padding: 0.3rem;
             }
+          }
+        }
+      }
+
+      modal {
+        /* width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0; */
+
+        & errors-container {
+          position: absolute;
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+          width: 30%;
+          bottom: 2rem;
+          right: 2rem;
+          gap: 0.5rem;
+          
+          & > error {
+            height: auto;
+            overflow: hidden;
+            background-color: var(--color-error);
+            color: var(--color-error-accent);
+            padding: 1rem;
           }
         }
       }
@@ -263,5 +300,9 @@
         </table>
       </results-container>
     </main>
+    <modal>
+      <errors-container>
+      </errors-container>
+    </modal>
   </body>
 </html>

@@ -1,11 +1,7 @@
 import { Position } from "./index"
+import { errorDisplayer } from "./error.js";
 
 const form = document.querySelector("#intersect-input-form") as HTMLFormElement
-
-type TFormData = {
-  point: Position
-  scale: number
-}
 
 const url = new URL(document.URL)
 
@@ -16,16 +12,95 @@ const SCALE_URL_ID = "scale"
 const API_ORIGIN = url.origin
 const API_BASE = "/~s368899/lab1/server"
 const API_INTERSECT_ENDPOINT = "/index.php"
+const INVALID_DATA_ERROR_CODE = 422
 
-const formData: TFormData = {
-  point: {
-    x: Number(url.searchParams.get(POINT_X_URL_ID) ?? 0),
-    y: Number(url.searchParams.get(POINT_Y_URL_ID) ?? 0),
-  },
-  scale: Number(url.searchParams.get(SCALE_URL_ID) ?? 1)
+const urlParams = {
+  x: Number(url.searchParams.get(POINT_X_URL_ID)),
+  y: Number(url.searchParams.get(POINT_Y_URL_ID)),
+  scale: Number(url.searchParams.get(SCALE_URL_ID))
 }
 
+const xValues = [-3, -2, -1, 0, 1, 2, 3, 4, 5]
+
+class Point {
+  private static DEFAULT_X = 0
+  private static DEFAULT_Y = 0
+  
+  #x: number = Point.DEFAULT_X
+  #y: number = Point.DEFAULT_Y
+
+  getX() {
+    return this.#x
+  }
+
+  getY() {
+    return this.#y
+  }
+
+  constructor(x?: number, y?: number) {
+    this.setX(x)
+    this.setY(y)
+  }
+
+  setX(x?: number) {
+    if (x === undefined || x === null) {
+      this.#x = Point.DEFAULT_X
+      return;
+    }
+
+    const val = closeToValueInSet(x, xValues)
+    if (val === undefined) {
+      throw new Error(`X should be one of ${xValues.join(" ")}`)
+    }
+
+    this.#x = val;
+
+  }
+
+  setY(y?: number) {
+    if (y == undefined || y == null) {
+      this.#y = Point.DEFAULT_Y
+      return;
+    }
+
+    if (!(-3 <= y && y <= 5)) {
+      throw new Error(`Should be number in range [-3, 5]. Got ${y}`)
+    }
+  }
+}
+
+const scaleValues = [1, 1.5, 2, 2.5, 3]
+class FormData {
+  public point: Point
+  public scale: number
+  
+  constructor({point = new Point(), scale = 1}: {point?: Point, scale?: number}) {
+    this.point = point
+    this.scale = scale;
+  }
+
+  setScale(scale: number) {
+    const val = closeToValueInSet(scale, scaleValues)
+
+    if (val === undefined) {
+      throw new Error(`Should be one of the following: ${scaleValues.join(" ")}`)
+    }
+  }
+}
+
+function closeToValueInSet(value: number, valueSet: number[]) {
+  for (const possibleValue of valueSet) {
+    if (Math.abs(possibleValue - value) <= 0.5) {
+      return possibleValue;
+    }
+  }
+}
+
+const formData = new FormData({})
+
 const pointXInput = form.querySelector("#input-point-x") as HTMLDivElement
+
+const ACTIVE_CLASS = "active"
 
 pointXInput.addEventListener("click", (event) => {
   if (!(event.target instanceof HTMLButtonElement)) {
@@ -33,24 +108,30 @@ pointXInput.addEventListener("click", (event) => {
   }
 
   const value = event.target.getAttribute("value")!
-  formData.point.x = Number(value)
+  try {
+    formData.point.setX(Number(value))
+  } catch (e) {
+    const error = e as Error
+    displayError(error.message)
+  }
+  
+  const buttonContainer = <HTMLElement>(event.currentTarget)
+  const buttons = buttonContainer.querySelectorAll("button")
+  buttons.forEach(button => button.classList.remove(ACTIVE_CLASS))
+
+  event.target.classList.add(ACTIVE_CLASS)
 
   updateUrl(formData)
 })
 
 const pointYInput = form.querySelector("#input-point-y")! as HTMLInputElement
-pointYInput.value = formData.point.y.toString()
-pointYInput.addEventListener("input", (event) => {
+pointYInput.value = formData.point.getY().toString()
+pointYInput.addEventListener("input", debounce((event: Event) => {
   const input = event.target as HTMLInputElement
   const pointY = Number(input.value)
 
   if (input.value.length != 0 && Number.isNaN(pointY)) {
-    input.setCustomValidity(`Should be number like 123.456, got ${input.value}`)
-    return;
-  }
-
-  if (!(-3 <= pointY && pointY <= 5)) {
-    input.setCustomValidity(`Should be number in range [3, 5]. Got ${pointY}`)
+    displayError(`Should be number like 1.123, got ${input.value}`, input)
     return;
   }
 
@@ -60,11 +141,21 @@ pointYInput.addEventListener("input", (event) => {
     return;
   }
 
-  formData.point.y = pointY
+  try {
+    formData.point.setY(pointY)
+  } catch (e) {
+    const error = e as Error
+    displayError(error.message, input)
+  }
   
   updateUrl(formData)
 
-})
+}, 400))
+
+function displayError(message: string = "Something went wrong! Please contact the developer", element?: HTMLInputElement) {
+  element?.setCustomValidity(message)
+  errorDisplayer.push(new Error(message))
+}
 
 
 const scaleInput = form.querySelector("#scale-input") as HTMLDivElement
@@ -103,6 +194,11 @@ form.addEventListener("submit", event => {
   request.send()
   request.addEventListener("load", response => {
     if (request.status !== 200) {
+      if (request.status === INVALID_DATA_ERROR_CODE) {
+        displayError("Invalid data! Check input")
+        return;
+      }
+      displayError()
       return;
     }
     
@@ -130,7 +226,7 @@ function insertRow(x: string, y: string, scale: string, result: string, current_
   tableBody?.appendChild(row)
 }
 
-function updateUrl(formData: TFormData) {
+function updateUrl(formData: FormData) {
   const queryParams = buildQueryParams(formData)
 
   const url = new URL(document.URL)
@@ -146,11 +242,11 @@ function mergeQueryParams(initialParams: URLSearchParams, updatedParams: URLSear
   }
 }
 
-function buildQueryParams(formData: TFormData) {
+function buildQueryParams(formData: FormData) {
   const url = new URLSearchParams()
   
-  url.set(POINT_X_URL_ID, formData.point.x.toString())
-  url.set(POINT_Y_URL_ID, formData.point.y.toString())
+  url.set(POINT_X_URL_ID, formData.point.getX().toString())
+  url.set(POINT_Y_URL_ID, formData.point.getY().toString())
   url.set(SCALE_URL_ID, formData.scale.toString())
 
   return url
@@ -168,3 +264,11 @@ function updateCheckbox(checkboxes: NodeListOf<HTMLInputElement>, value: string)
   })
 }
 
+function debounce<T extends Function>(callback: T, timeoutMs: number) {
+  let timerId: number | undefined = undefined
+
+  return ((...args: any) => {
+    window.clearTimeout(timerId)
+    timerId = setTimeout(() => callback(...args), timeoutMs) as unknown as number
+  })
+}
