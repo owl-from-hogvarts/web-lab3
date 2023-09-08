@@ -19,13 +19,13 @@ const FIGURE_COLOR = "#3399ff"
 
 context.save()
 context.translate(canvasWidth/2, canvasHeight/2)
+context.scale(1, -1)
 context.save()
 drawLeftBottom(context)
-context.rotate(Math.PI/2)
+context.rotate(Math.PI)
 drawRightBottom(context)
 context.restore()
-context.rotate(-Math.PI/2)
-drawLeftTop(context)
+drawRightTop(context)
 
 context.restore()
 
@@ -34,7 +34,7 @@ drawAxis(context, true);
 
 
 
-function drawLeftTop(context: CanvasRenderingContext2D) {
+function drawRightTop(context: CanvasRenderingContext2D) {
   context.save()
   const triangle = new Path2D()
   triangle.moveTo(0,0)
@@ -50,7 +50,7 @@ function drawLeftBottom(context: CanvasRenderingContext2D) {
   context.save()
   const arc = new Path2D()
   arc.moveTo(0,0)
-  arc.arc(0, 0, AXIS_HALF_UNIT, 0, Math.PI/2)
+  arc.arc(0, 0, AXIS_HALF_UNIT, -Math.PI/2, 0)
 
   context.fillStyle = FIGURE_COLOR
   context.fill(arc)
@@ -62,7 +62,7 @@ function drawRightBottom(context: CanvasRenderingContext2D) {
 
   const rect = new Path2D()
   rect.moveTo(0,0)
-  rect.rect(0,0,AXIS_UNIT, AXIS_HALF_UNIT)
+  rect.rect(0,0, AXIS_HALF_UNIT, AXIS_UNIT)
 
   context.fillStyle = FIGURE_COLOR
   context.fill(rect)

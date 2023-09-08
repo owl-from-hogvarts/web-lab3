@@ -14,8 +14,8 @@ const POINT_Y_URL_ID = "pointY"
 const SCALE_URL_ID = "scale"
 
 const API_ORIGIN = url.origin
-const API_BASE = "/api/v1.0"
-const API_INTERSECT_ENDPOINT = "/intersect"
+const API_BASE = "/~s368899/lab1/server"
+const API_INTERSECT_ENDPOINT = "/index.php"
 
 const formData: TFormData = {
   point: {
@@ -46,6 +46,11 @@ pointYInput.addEventListener("input", (event) => {
 
   if (input.value.length != 0 && Number.isNaN(pointY)) {
     input.setCustomValidity(`Should be number like 123.456, got ${input.value}`)
+    return;
+  }
+
+  if (!(-3 <= pointY && pointY <= 5)) {
+    input.setCustomValidity(`Should be number in range [3, 5]. Got ${pointY}`)
     return;
   }
 
@@ -96,7 +101,34 @@ form.addEventListener("submit", event => {
   
   request.open("GET", url)
   request.send()
+  request.addEventListener("load", response => {
+    if (request.status !== 200) {
+      return;
+    }
+    
+    const [x, y, scale, result, currentTime, execution_time] = request.responseText.split(";")
+    insertRow(x, y, scale, result, currentTime, execution_time)
+  })
 })
+
+const tableBody = document.querySelector("#results-table > tbody")
+
+function insertRow(x: string, y: string, scale: string, result: string, current_time: string, execution_time: string) {
+  const row = document.createElement("tr")
+  const x_cell = `<td>${x}</td>`
+  const y_cell = `<td>${y}</td>`
+  const scale_cell = `<td>${scale}</td>`
+  const result_cell = `<td>${result}</td>`
+  const current_time_cell = `<td>${current_time}</td>`
+  const execution_time_cell = `<td>${execution_time}</td>`
+
+  const cells = [x_cell, y_cell, scale_cell, result_cell, current_time_cell, execution_time_cell]
+  for (const cell of cells) {
+    row.insertAdjacentHTML("beforeend", cell)
+  }
+
+  tableBody?.appendChild(row)
+}
 
 function updateUrl(formData: TFormData) {
   const queryParams = buildQueryParams(formData)
