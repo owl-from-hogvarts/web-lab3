@@ -113,6 +113,7 @@ pointXInput.addEventListener("click", (event) => {
   } catch (e) {
     const error = e as Error
     displayError(error.message)
+    return;
   }
   
   const buttonContainer = <HTMLElement>(event.currentTarget)
