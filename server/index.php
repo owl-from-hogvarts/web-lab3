@@ -60,7 +60,7 @@ function intersectsBottomRight($x, $y) : bool {
 }
 
 function intersectsBottomLeft($x, $y) : bool {
-  return abs($x) < 0.5 || abs($y) < 1;
+  return abs($x) < 0.5 && abs($y) < 1;
 }
 
 // true means ok
