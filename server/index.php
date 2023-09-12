@@ -2,14 +2,26 @@
 
 // retrieve variables for calculus
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
-  $x = floatval($_GET["pointX"]);
-  $y = floatval($_GET["pointY"]);
-  $scale = floatval($_GET["scale"]);
+  
+  $x_string = $_GET["pointX"];
+  $y_string = $_GET["pointY"];
 
-  if (is_nan($x) || is_nan($y) || is_nan($scale)) {
+  $scale_string = $_GET["scale"];
+
+  if (is_exceeds_length($x_string) || is_exceeds_length($y_string) || is_exceeds_length($scale_string)) {
     http_response_code(422);
     return;
   }
+   
+  if ((! is_numeric($x_string)) || (! is_numeric($y_string)) || (! is_numeric($scale_string))) {
+    http_response_code(422);
+    return;
+  }
+
+  $x = floatval($x_string);
+  $y = floatval($y_string);
+  $scale = floatval($_GET["scale"]);
+
 
   if(!checkArguments($x, $y, $scale)) {
     http_response_code(422);
@@ -83,6 +95,10 @@ function checkScale($scale) : bool {
   return in_array($scale, $scale_valid_values, false);
 }
 
+function is_exceeds_length($s) : bool {
+  $MAX_FLOAT_LENGTH = 15;
+  return strlen($s) > $MAX_FLOAT_LENGTH;
+}
 
 
 // return result as json object

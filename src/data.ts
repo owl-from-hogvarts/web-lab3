@@ -13,6 +13,7 @@ const API_ORIGIN = url.origin
 const API_BASE = "/~s368899/lab1/server"
 const API_INTERSECT_ENDPOINT = "/index.php"
 const INVALID_DATA_ERROR_CODE = 422
+const MAX_FLOAT_INPUT_LENGTH = 15
 
 const urlParams = {
   x: Number(url.searchParams.get(POINT_X_URL_ID)),
@@ -135,6 +136,11 @@ pointYInput.addEventListener("input", debounce((event: Event) => {
 
   if (input.value.length != 0 && Number.isNaN(pointY)) {
     displayError(`Should be number like 1.123, got ${input.value}`, input)
+    return;
+  }
+
+  if (input.value.length > MAX_FLOAT_INPUT_LENGTH) {
+    displayError(`Too large Y input. Try shorter numbers`, input)
     return;
   }
 
