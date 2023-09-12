@@ -66,6 +66,8 @@ class Point {
     if (!(-3 <= y && y <= 5)) {
       throw new Error(`Should be number in range [-3, 5]. Got ${y}`)
     }
+
+    this.#y = y;
   }
 }
 
