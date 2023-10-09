@@ -2,32 +2,25 @@ package webapp.data;
 
 import java.beans.JavaBean;
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.Objects;
+import java.time.Instant;
 
 @JavaBean
 public class AreaData implements Serializable {
-    private double x;
-    private double y;
-    private double r;
+    private Point point;
+    public Point getPoint() {
+        return point;
+    }
+
+    public void setPoint(Point point) {
+        this.point = point;
+    }
+
     private boolean result;
     private long calculationTime;
-    private LocalDateTime calculatedAt;
+    private Instant calculatedAt;
 
     public AreaData() {
         super();
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public double getR() {
-        return r;
     }
 
     public boolean getResult() {
@@ -38,20 +31,8 @@ public class AreaData implements Serializable {
         return calculationTime;
     }
 
-    public LocalDateTime getCalculatedAt() {
+    public Instant getCalculatedAt() {
         return calculatedAt;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    public void setR(double r) {
-        this.r = r;
     }
 
     public void setResult(boolean result) {
@@ -62,32 +43,50 @@ public class AreaData implements Serializable {
         this.calculationTime = calculationTime;
     }
 
-    public void setCalculatedAt(LocalDateTime calculatedAt) {
+    public void setCalculatedAt(Instant calculatedAt) {
         this.calculatedAt = calculatedAt;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof AreaData)) return false;
-        AreaData data = (AreaData) o;
-        return Double.compare(getX(), data.getX()) == 0 && Double.compare(getY(), data.getY()) == 0 && Double.compare(getR(), data.getR()) == 0 && getResult() == data.getResult() && getCalculationTime() == data.getCalculationTime() && Objects.equals(getCalculatedAt(), data.getCalculatedAt());
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((point == null) ? 0 : point.hashCode());
+        result = prime * result + (this.result ? 1231 : 1237);
+        result = prime * result + (int) (calculationTime ^ (calculationTime >>> 32));
+        result = prime * result + ((calculatedAt == null) ? 0 : calculatedAt.hashCode());
+        return result;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(getX(), getY(), getR(), getResult(), getCalculationTime(), getCalculatedAt());
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AreaData other = (AreaData) obj;
+        if (point == null) {
+            if (other.point != null)
+                return false;
+        } else if (!point.equals(other.point))
+            return false;
+        if (result != other.result)
+            return false;
+        if (calculationTime != other.calculationTime)
+            return false;
+        if (calculatedAt == null) {
+            if (other.calculatedAt != null)
+                return false;
+        } else if (!calculatedAt.equals(other.calculatedAt))
+            return false;
+        return true;
     }
 
     @Override
     public String toString() {
-        return "AreaData{" +
-                "x=" + x +
-                ", y=" + y +
-                ", r=" + r +
-                ", result=" + result +
-                ", calculationTime=" + calculationTime +
-                ", calculatedAt=" + calculatedAt +
-                '}';
+        return "AreaData [point=" + point + ", result=" + result + ", calculationTime=" + calculationTime
+                + ", calculatedAt=" + calculatedAt + "]";
     }
 }

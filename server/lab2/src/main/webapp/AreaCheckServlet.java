@@ -2,7 +2,9 @@ package webapp;
 
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -12,7 +14,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import webapp.data.AreaData;
 import webapp.data.Point;
+import webapp.data.UserAreaData;
 import webapp.errors.InvalidValue;
 import webapp.errors.ParamNotFound;
 import webapp.errors.ParamValueNotProvided;
@@ -24,6 +28,8 @@ public class AreaCheckServlet extends HttpServlet {
   private static final String PARAM_POINT_X = "pointX";
   private static final String PARAM_POINT_Y = "pointY";
   private static final String PARAM_SCALE = "scale";
+  private static final String SESSION_POINTS = "points";
+
   private static final Set<Double> ALLOWED_SCALE_VALUES = new HashSet<>();
   private static final double SCALE_TOLERANCE = 0.20d;
   private static final Intersector intersector = new Intersector();
@@ -49,6 +55,8 @@ public class AreaCheckServlet extends HttpServlet {
   private void processGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ParamNotFound, ParamValueNotProvided, InvalidValue {
     final var params = req.getParameterMap();
 
+    final var start = Instant.now();
+
     final String strPointX = getParamFirstSafe(params, PARAM_POINT_X);
     final String strPointY = getParamFirstSafe(params, PARAM_POINT_Y);
     final String strScale = getParamFirstSafe(params, PARAM_SCALE);
@@ -63,14 +71,32 @@ public class AreaCheckServlet extends HttpServlet {
     final double pointXNormalized = normalize(pointX, scale);
     final double pointYNormalized = normalize(pointY, scale);
     // compute intersect
-    resp.getWriter().println(pointXNormalized);
-    resp.getWriter().println(pointYNormalized);
-    resp.getWriter().println(scale);
-    final boolean isIntersects = intersector.intersect(new Point(pointXNormalized, pointYNormalized, scale));
+    final var point = new Point(pointXNormalized, pointYNormalized, scale);
+    final boolean isIntersects = intersector.intersect(point);
 
-    resp.getWriter().println(isIntersects);
-    
+    final var duration = Instant.now().getEpochSecond() - start.getEpochSecond();
     // store results into bean
+    final var session = req.getSession(true);
+    final var hasPoints = session.getAttribute(SESSION_POINTS) != null;
+
+    if (!hasPoints) {
+      final var userAreaData = new UserAreaData();
+      userAreaData.setAreaDataList(new LinkedList<>());
+      session.setAttribute(SESSION_POINTS, userAreaData);
+    }
+
+    final var userData = (UserAreaData) session.getAttribute(SESSION_POINTS);
+    final var areaData = new AreaData();
+    areaData.setPoint(point);
+    areaData.setCalculatedAt(Instant.now());
+    areaData.setCalculationTime(duration);
+    areaData.setResult(isIntersects);
+    userData.getAreaDataList().add(areaData);
+
+    for (final var entity : userData.getAreaDataList()) {
+      resp.getWriter().println(entity.toString());
+    }
+
     // send bean to client
   }
 
