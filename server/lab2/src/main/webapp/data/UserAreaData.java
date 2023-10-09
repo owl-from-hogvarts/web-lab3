@@ -5,8 +5,13 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
+
 @JavaBean
+@JsonRootName(value = "user-points")
 public class UserAreaData implements Serializable {
+    @JsonProperty("points")
     private LinkedList<AreaData> areaDataList;
 
     public UserAreaData() {

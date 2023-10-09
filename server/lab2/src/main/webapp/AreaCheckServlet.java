@@ -9,6 +9,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.util.JacksonFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -29,6 +36,7 @@ public class AreaCheckServlet extends HttpServlet {
   private static final String PARAM_POINT_Y = "pointY";
   private static final String PARAM_SCALE = "scale";
   private static final String SESSION_POINTS = "points";
+  private static final ObjectMapper objectMapper = JsonMapper.builder().findAndAddModules().enable(SerializationFeature.WRAP_ROOT_VALUE).build();
 
   private static final Set<Double> ALLOWED_SCALE_VALUES = new HashSet<>();
   private static final double SCALE_TOLERANCE = 0.20d;
@@ -93,11 +101,8 @@ public class AreaCheckServlet extends HttpServlet {
     areaData.setResult(isIntersects);
     userData.getAreaDataList().add(areaData);
 
-    for (final var entity : userData.getAreaDataList()) {
-      resp.getWriter().println(entity.toString());
-    }
-
     // send bean to client
+    objectMapper.writeValue(resp.getWriter(), userData);
   }
 
   private static String[] getParamSafe(Map<String, String[]> params, String paramName) throws ParamNotFound {
