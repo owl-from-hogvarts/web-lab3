@@ -94,7 +94,7 @@ public class AreaCheckServlet extends HttpServlet {
     final var areaData = new AreaData();
     areaData.setPoint(point);
     areaData.setCalculatedAt(Instant.now());
-    areaData.setCalculationTime(duration.getNano() / 1000);
+    areaData.setCalculationTime(duration.getNano() / 1_000_000);
     areaData.setResult(isIntersects);
     userData.getAreaDataList().add(areaData);
 
@@ -131,7 +131,7 @@ public class AreaCheckServlet extends HttpServlet {
   }
 
   private static void validateNumericString(String param, String numericString) throws InvalidValue {
-    final int MAX_STRING_LENGTH = 10;
+    final int MAX_STRING_LENGTH = 13;
     
     if (numericString.length() < 1) {
       throw new InvalidValue(param, "Empty string provided! Excepted non empty string!");
