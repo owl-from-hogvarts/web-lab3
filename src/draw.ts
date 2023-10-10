@@ -1,3 +1,4 @@
+import { TPoint } from "./point";
 
 const canvas = document.querySelector("#plot") as HTMLCanvasElement;
 const context = canvas.getContext("2d")!;
@@ -9,31 +10,55 @@ const canvasWidth = canvas.clientWidth;
 const canvasHeight = canvas.clientHeight;
 
 const AXIS_NUMERIC_SIZE = widthPercents(80);
-const AXIS_UNIT = AXIS_NUMERIC_SIZE / 2
-const AXIS_HALF_UNIT = AXIS_UNIT / 2
+export const AXIS_UNIT = AXIS_NUMERIC_SIZE / 2
+export const AXIS_HALF_UNIT = AXIS_UNIT / 2
 
 const FIGURE_COLOR = "#3399ff"
+const POINT_COLOR = {
+  intersects: "#2F4",
+  notIntersects: "#570000"
+}
+const POINT_RADIUS = 5
+
+export function reDraw() {
+  context.clearRect(0, 0, canvasWidth, canvasHeight)
+  context.save()
+  context.translate(canvasWidth/2, canvasHeight/2)
+  context.scale(1, -1)
+  context.save()
+  drawCircle(context)
+  context.rotate(Math.PI)
+  drawTriangle(context, AXIS_HALF_UNIT)
+  context.restore()
+  context.save()
+  context.scale(-1, 1)
+  drawRect(context)
+  context.restore()
+  
+  context.restore()
+  
+  drawAxis(context, false);
+  drawAxis(context, true);  
+}
 
 
-context.save()
-context.translate(canvasWidth/2, canvasHeight/2)
-context.scale(1, -1)
-context.save()
-drawCircle(context)
-context.rotate(Math.PI)
-drawTriangle(context, AXIS_HALF_UNIT)
-context.restore()
-context.save()
-context.scale(-1, 1)
-drawRect(context)
-context.restore()
+export function drawPoint(point: TPoint, result: boolean) {
+  context.save()
+  context.translate(canvasWidth/2, canvasHeight/2)
+  context.scale(1, -1)
 
-context.restore()
+  const x = AXIS_UNIT*point.x/point.scale
+  const y = AXIS_UNIT*point.y/point.scale
 
-drawAxis(context, false);
-drawAxis(context, true);
+  context.translate(x, y)
+  const circle = new Path2D()
+  circle.moveTo(0, 0)
+  circle.arc(0, 0, POINT_RADIUS, 0, Math.PI*2)
 
-
+  context.fillStyle = result ? POINT_COLOR.intersects : POINT_COLOR.notIntersects;
+  context.fill(circle)
+  context.restore()
+}
 
 function drawTriangle(context: CanvasRenderingContext2D, size: number) {
   context.save()
