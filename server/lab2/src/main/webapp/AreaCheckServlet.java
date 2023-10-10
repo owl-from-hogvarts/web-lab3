@@ -2,6 +2,7 @@ package webapp;
 
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -9,13 +10,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.fasterxml.jackson.core.util.JacksonFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -76,13 +73,13 @@ public class AreaCheckServlet extends HttpServlet {
     checkRange(PARAM_POINT_Y, -5, pointY, 5);
     final double scaleApproximate = parseDoubleParam(PARAM_SCALE, strScale);
     final double scale = getInSet(PARAM_SCALE, scaleApproximate, ALLOWED_SCALE_VALUES, SCALE_TOLERANCE);
-    final double pointXNormalized = normalize(pointX, scale);
-    final double pointYNormalized = normalize(pointY, scale);
+
     // compute intersect
-    final var point = new Point(pointXNormalized, pointYNormalized, scale);
+    final var point = new Point(pointX, pointY, scale);
     final boolean isIntersects = intersector.intersect(point);
 
-    final var duration = Instant.now().getEpochSecond() - start.getEpochSecond();
+    final var end = Instant.now();
+    final var duration = Duration.between(end, start);
     // store results into bean
     final var session = req.getSession(true);
     final var hasPoints = session.getAttribute(SESSION_POINTS) != null;
@@ -97,7 +94,7 @@ public class AreaCheckServlet extends HttpServlet {
     final var areaData = new AreaData();
     areaData.setPoint(point);
     areaData.setCalculatedAt(Instant.now());
-    areaData.setCalculationTime(duration);
+    areaData.setCalculationTime(duration.getNano() / 1000);
     areaData.setResult(isIntersects);
     userData.getAreaDataList().add(areaData);
 
@@ -177,10 +174,4 @@ public class AreaCheckServlet extends HttpServlet {
 
     throw new InvalidValue(paramName, "Value " + value + " is not in set!");
   }
-
-  private static double normalize(double num, double scale) {
-    assert scale != 0;
-    return num / scale;
-  }
-  
 }

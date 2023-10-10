@@ -3,9 +3,6 @@ package webapp;
 import webapp.data.Point;
 
 public class Intersector {
-  private static final double RADIUS = 1d;
-  private static final double HALF_RADIUS = RADIUS / 2d;
-
 
   public boolean intersect(Point point) {
     if (point.x() > 0 && point.y() > 0) {
@@ -28,14 +25,18 @@ public class Intersector {
   }
 
   private boolean intersectBottomRight(Point point) {
-    return Math.sqrt(Math.pow(point.x(), 2d) + Math.pow(point.y(), 2d)) <= HALF_RADIUS;
+    return Math.sqrt(Math.pow(point.x(), 2d) + Math.pow(point.y(), 2d)) <= halfRadius(point);
   }
 
   private boolean intersectBottomLeft(Point point) {
-    return (Math.abs(point.x()) + Math.abs(point.y())) < HALF_RADIUS;
+    return (Math.abs(point.x()) + Math.abs(point.y())) < halfRadius(point);
   }
 
   private boolean intersectTopLeft(Point point) {
-    return Math.abs(point.x()) <= HALF_RADIUS  && Math.abs(point.y()) <= RADIUS;
+    return Math.abs(point.x()) <= halfRadius(point) && Math.abs(point.y()) <= point.scale();
+  }
+
+  private static double halfRadius(Point point) {
+    return point.scale() / 2;
   }
 }
