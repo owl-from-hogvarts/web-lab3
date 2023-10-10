@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JavaBean
-@JsonRootName(value = "user-points")
+@JsonRootName(value = "user")
 public class UserAreaData implements Serializable {
     @JsonProperty("points")
     private LinkedList<AreaData> areaDataList;

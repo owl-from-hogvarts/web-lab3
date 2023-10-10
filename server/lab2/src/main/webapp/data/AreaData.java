@@ -4,6 +4,8 @@ import java.beans.JavaBean;
 import java.io.Serializable;
 import java.time.Instant;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @JavaBean
 public class AreaData implements Serializable {
     private Point point;
@@ -17,6 +19,7 @@ public class AreaData implements Serializable {
 
     private boolean result;
     private long calculationTime;
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER, without = JsonFormat.Feature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS)
     private Instant calculatedAt;
 
     public AreaData() {
