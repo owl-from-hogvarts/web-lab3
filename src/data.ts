@@ -2,7 +2,7 @@ import { AXIS_UNIT } from "./draw.js";
 import { displayError } from "./error.js";
 import { buildQueryParams, form, init, pointXInput, pointYInput, scaleInput, updateX, updateY, update } from "./input-form.js";
 import { validateNumberInput } from "./point.js";
-import { buildEndpointUrl, displayRequestError, isRequestOk, mergeQueryParams, url } from "./url.js";
+import { buildEndpointUrl, displayKnownError, displaySimpleRequestError, isRequestOk, mergeQueryParams, url } from "./url.js";
 import { initPoints, requestPoints, updatePoints } from "./display-points.js";
 
 const state = init(url)
@@ -68,10 +68,15 @@ form.addEventListener("submit", event => {
 
   request.open("GET", url)
   request.send()
-  request.addEventListener("load", async _ => {
+  request.addEventListener("load", async response => {
     // check if error
     if (!isRequestOk(request)) {
-      displayRequestError(request.status)
+      if (request.status === 501) {
+        displayKnownError(JSON.parse(request.responseText))
+        return;
+      }
+      
+      displaySimpleRequestError(request.status)
       return;
     }
 

@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -51,7 +53,8 @@ public class AreaCheckServlet extends HttpServlet {
     try {
       processGet(req, resp);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      resp.setStatus(501);
+      PointsHelper.objectMapper.writer().writeValue(resp.getWriter(), e);
     }
   }
 

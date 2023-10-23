@@ -1,5 +1,10 @@
 package webapp.errors;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonRootName;
+
+@JsonIncludeProperties(value = {"paramName", "message"})
+@JsonRootName(value = "error")
 public abstract class ParamException extends Exception {
   private final String paramName;
   public String getParamName() {

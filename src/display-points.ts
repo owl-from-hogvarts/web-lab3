@@ -1,7 +1,7 @@
 import { reDraw, drawPoint } from "./draw.js";
 import { TPoint } from "./point.js";
 import { clearTable, insertRow } from "./table.js";
-import { buildEndpointUrl, isRequestOk, displayRequestError } from "./url.js";
+import { buildEndpointUrl, isRequestOk, displaySimpleRequestError, TErrorResponse, displayKnownError } from "./url.js";
 
 const tableBody = document.querySelector("#results-table > tbody") as HTMLTableElement
 
@@ -58,7 +58,13 @@ export async function requestPoints() {
   const pointsRequestUrl = buildEndpointUrl();
   const response = await fetch(pointsRequestUrl, { method: "GET" });
   if (!isRequestOk(response)) {
-    displayRequestError(response.status);
+    if (response.status !== 501) {
+      displaySimpleRequestError(response.status);
+      return;
+    }
+
+    const error = await response.json() as TErrorResponse
+    displayKnownError(error)
     return;
   }
 

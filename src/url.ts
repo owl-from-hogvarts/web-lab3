@@ -1,5 +1,12 @@
 import { displayError } from "./error.js"
 
+export type TErrorResponse = {
+  error: {
+    message: string,
+    paramName?: string
+  }
+}
+
 export function mergeQueryParams(initialParams: URLSearchParams, updatedParams: URLSearchParams) {
   for (const [key, value] of updatedParams) {
     initialParams.set(key, value)
@@ -30,7 +37,12 @@ export function isRequestOk({status}: {status: number}) {
   return status === 200
 }
 
-export function displayRequestError(status: number) {
+export function displayKnownError({error}: TErrorResponse) {
+  const prefix = error.paramName ? `Issue with field ${error.paramName}: `: ""
+  displayError(prefix + error.message)
+}
+
+export function displaySimpleRequestError(status: number) {
   const errorMessage = apiErrorMessages[status]
   displayError(errorMessage)
 }
