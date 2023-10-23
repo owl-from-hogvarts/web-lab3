@@ -5,14 +5,10 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -20,7 +16,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import webapp.data.AreaData;
 import webapp.data.Point;
-import webapp.data.UserAreaData;
 import webapp.errors.InvalidValue;
 import webapp.errors.ParamNotFound;
 import webapp.errors.ParamValueNotProvided;
@@ -32,8 +27,11 @@ public class AreaCheckServlet extends HttpServlet {
   private static final String PARAM_POINT_X = "pointX";
   private static final String PARAM_POINT_Y = "pointY";
   private static final String PARAM_SCALE = "scale";
-  private static final String SESSION_POINTS = "points";
-  private static final ObjectMapper objectMapper = JsonMapper.builder().findAndAddModules().enable(SerializationFeature.WRAP_ROOT_VALUE).build();
+
+  static String[] getRequiredParams() {
+    final String[] requiredParams = {PARAM_POINT_X, PARAM_POINT_Y, PARAM_SCALE};
+    return requiredParams;
+  }
 
   private static final Set<Double> ALLOWED_SCALE_VALUES = new HashSet<>();
   private static final double SCALE_TOLERANCE = 0.20d;
@@ -82,24 +80,14 @@ public class AreaCheckServlet extends HttpServlet {
     final var duration = Duration.between(end, start);
     // store results into bean
     final var session = req.getSession(true);
-    final var hasPoints = session.getAttribute(SESSION_POINTS) != null;
+    final var userData = PointsHelper.getPointsSafe(session);
 
-    if (!hasPoints) {
-      final var userAreaData = new UserAreaData();
-      userAreaData.setAreaDataList(new LinkedList<>());
-      session.setAttribute(SESSION_POINTS, userAreaData);
-    }
-
-    final var userData = (UserAreaData) session.getAttribute(SESSION_POINTS);
     final var areaData = new AreaData();
     areaData.setPoint(point);
     areaData.setCalculatedAt(Instant.now());
     areaData.setCalculationTime(duration.getNano() / 1_000_000);
     areaData.setResult(isIntersects);
     userData.getAreaDataList().add(areaData);
-
-    // send bean to client
-    objectMapper.writeValue(resp.getWriter(), userData);
   }
 
   private static String[] getParamSafe(Map<String, String[]> params, String paramName) throws ParamNotFound {

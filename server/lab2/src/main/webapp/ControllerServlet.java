@@ -18,10 +18,25 @@ public class ControllerServlet extends HttpServlet {
     final boolean isJson = req.getParameter(PARAM_IS_JSON) != null;
 
     if (isJson) {
-      req.getRequestDispatcher("WEB-INF/areaCheck").forward(req, resp);
+      if (any(req, AreaCheckServlet.getRequiredParams())) {
+        req.getRequestDispatcher("WEB-INF/areaCheck").forward(req, resp);
+        return;
+      }
+
+      req.getRequestDispatcher("WEB-INF/getPoints").forward(req, resp);
       return;
     }
     req.getRequestDispatcher("/WEB-INF/index.jsp").forward(req, resp);
+  }
+
+  private boolean any(HttpServletRequest req, String... paramNames) {
+    for (final String name : paramNames) {
+      if (req.getParameter(name) != null) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
 }
