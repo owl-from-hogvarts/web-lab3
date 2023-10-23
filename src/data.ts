@@ -86,13 +86,16 @@ canvas.addEventListener("click", (event) => {
   const x = (event.clientX - rect.left - rect.width / 2) / AXIS_UNIT * state.scale; 
   const y = (event.clientY - rect.top - rect.height / 2) / -AXIS_UNIT * state.scale;
   
-  state.point.setX(x)
-  updateX(state)
-  state.point.setY(y)
-  updateY(state)
-  update(state)
-
-  form.requestSubmit()
+  try {
+    state.point.setX(x)
+    updateX(state)
+    state.point.setY(y)
+    updateY(state)
+    update(state) 
+    form.requestSubmit()
+  } catch (e) {
+    displayError((<Error>e).message)
+  }
 })
 
 
