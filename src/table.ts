@@ -1,8 +1,10 @@
+import type { TPoint } from "./point";
+
 export function clearTable(tableBody: HTMLTableElement) {
   tableBody!.innerHTML = "";
 }
 
-export function insertRow(tableBody: HTMLTableElement, x: string, y: string, scale: string, result: string, current_time: string, execution_time: string) {
+export function insertRow(tableBody: HTMLTableElement, {x, y, scale}: TPoint, result: string, current_time: string, execution_time: string) {
   const row = document.createElement("tr")
   const x_cell = `<td>${x}</td>`
   const y_cell = `<td>${y}</td>`

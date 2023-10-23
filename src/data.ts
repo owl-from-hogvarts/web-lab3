@@ -62,7 +62,6 @@ function onNumberInput(debounceMs: number, name: string, callback: (value: numbe
   }, debounceMs)
 }
 
-/** Undefined means success */
 function validateNumberInput(input: string, filedName: string): Error | number {
   const value = Number(input)
   
@@ -128,7 +127,7 @@ form.addEventListener("submit", event => {
     reDraw()
     for (const {point, result, calculatedAt, calculationTime} of points) {
       drawPoint(point, result)
-      insertRow(tableBody, point.x.toString(), point.y.toString(), point.scale.toString(), result.toString(), new Date(calculatedAt).toLocaleTimeString("ru-RU"), calculationTime.toString())
+      insertRow(tableBody, point, result.toString(), new Date(calculatedAt).toLocaleTimeString("ru-RU"), calculationTime.toString())
     }
   })
 })
