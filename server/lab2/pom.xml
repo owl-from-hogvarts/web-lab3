@@ -54,6 +54,11 @@
         <groupId>org.wildfly.plugins</groupId>
         <artifactId>wildfly-maven-plugin</artifactId>
         <version>4.2.0.Final</version>
+        <configuration>
+          <server-args>
+            <server-arg>-Djboss.http.port=17025</server-arg>
+          </server-args>
+        </configuration>
       </plugin>
     </plugins>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
