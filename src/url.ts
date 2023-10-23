@@ -27,7 +27,7 @@ const apiErrorMessages: {[key: number]: string} = {
 }
 
 export function isRequestOk({status}: {status: number}) {
-  return status !== 200
+  return status === 200
 }
 
 export function displayRequestError(status: number) {
