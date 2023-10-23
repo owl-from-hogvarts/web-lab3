@@ -1,42 +1,20 @@
-import { AXIS_UNIT, drawPoint, reDraw } from "./draw.js";
+import { AXIS_UNIT } from "./draw.js";
 import { displayError } from "./error.js";
 import { buildQueryParams, form, init, pointXInput, pointYInput, scaleInput, updateX, updateY, update } from "./input-form.js";
-import { MAX_FLOAT_INPUT_LENGTH, TPoint } from "./point.js";
-import { mergeQueryParams, url } from "./url.js";
-import { clearTable, insertRow } from "./table.js";
+import { validateNumberInput } from "./point.js";
+import { buildEndpointUrl, displayRequestError, isRequestOk, mergeQueryParams, url } from "./url.js";
+import { initPoints, requestPoints, updatePoints } from "./display-points.js";
 
 const state = init(url)
+initPoints()
 
 const DEBOUNCE_TIME = 400
 
-const API_ORIGIN = url.origin
-const API_BASE = ""
-const API_INTERSECT_ENDPOINT = "/app"
-const INVALID_DATA_ERROR_CODE = 422
-
-type AreaCheckResult = {
-  point: TPoint,
-  result: boolean,
-  calculationTime: number,
-  calculatedAt: number
-}
-
-type AreaCheckResponse = {
-  user: {
-    points: AreaCheckResult[]
-  }
-}
-
-
-// init
-// update state
 pointXInput.addEventListener("input", onNumberInput(DEBOUNCE_TIME, "X", (value) => {
   state.point.setX(value)
   updateX(state)
 }))
 
-// init
-// update state
 pointYInput.addEventListener("input", onNumberInput(DEBOUNCE_TIME, "Y", (value) => {
   state.point.setY(value)
   updateY(state)
@@ -56,28 +34,10 @@ function onNumberInput(debounceMs: number, name: string, callback: (value: numbe
     try {
       callback(result)
     } catch (e) {
-      const error = e as Error
-      displayError(error.message, input)
+      const message = e instanceof Error ? e.message : e as string
+      displayError(message, input)
     }
   }, debounceMs)
-}
-
-function validateNumberInput(input: string, filedName: string): Error | number {
-  const value = Number(input)
-  
-  if (input.length != 0 && Number.isNaN(value)) {
-    return new Error(`Should be number like 1.123, got ${input}`);
-  }
-
-  if (input.length > MAX_FLOAT_INPUT_LENGTH) {
-    return new Error(`Too large ${filedName} input. Try shorter numbers`)
-  }
-  
-  if (input.length === 0) {
-    return value;
-  }
-
-  return value
 }
 
 scaleInput.addEventListener("click", (event) => {
@@ -100,35 +60,23 @@ form.addEventListener("submit", event => {
   event.preventDefault()
 
   const request = new XMLHttpRequest()
-  const tableBody = document.querySelector("#results-table > tbody") as HTMLTableElement
-  const url = new URL(API_BASE + API_INTERSECT_ENDPOINT, API_ORIGIN)
-  const params = buildQueryParams(state)
-  mergeQueryParams(url.searchParams, params)
-  url.searchParams.set("isJson", "")
-  
+  // should only check submit data to server
+  // server SHOULD NOT send new list of points
+  // client requests new point data by itself
+  const url = buildEndpointUrl()
+  mergeQueryParams(url.searchParams, buildQueryParams(state))
+
   request.open("GET", url)
   request.send()
-  request.addEventListener("load", response => {
-    if (request.status !== 200) {
-      if (request.status === INVALID_DATA_ERROR_CODE) {
-        displayError("Invalid data! Check input")
-        return;
-      }
-      displayError()
+  request.addEventListener("load", async _ => {
+    // check if error
+    if (!isRequestOk(request)) {
+      displayRequestError(request.status)
       return;
     }
-    
 
-    const { points } = (JSON.parse(request.responseText) as AreaCheckResponse).user;
-    points.reverse()
-
-    clearTable(tableBody)
-
-    reDraw()
-    for (const {point, result, calculatedAt, calculationTime} of points) {
-      drawPoint(point, result)
-      insertRow(tableBody, point, result.toString(), new Date(calculatedAt).toLocaleTimeString("ru-RU"), calculationTime.toString())
-    }
+    const points = await requestPoints()
+    updatePoints(points)
   })
 })
 
@@ -142,8 +90,8 @@ canvas.addEventListener("click", (event) => {
   updateX(state)
   state.point.setY(y)
   updateY(state)
-
   update(state)
+
   form.requestSubmit()
 })
 
@@ -157,13 +105,4 @@ function debounce<T extends Function>(callback: T, timeoutMs: number) {
   })
 }
 
-// ------- dots -------
-// ---- init phase ----
-// request current list of dots
 
-// ---- input phase ----
-// on new dot pushed to server, re-request list
-
-// ---- update phase ----
-// redraw points
-// refill table

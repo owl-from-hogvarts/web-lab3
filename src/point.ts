@@ -1,6 +1,6 @@
 
 
-export const MAX_FLOAT_INPUT_LENGTH = 10
+const MAX_FLOAT_INPUT_LENGTH = 10
 
 export type TPoint = {
   x: number,
@@ -70,5 +70,23 @@ export function closeToValueInSet(value: number, valueSet: number[]) {
       return possibleValue;
     }
   }
+}
+
+export function validateNumberInput(input: string, filedName: string): Error | number {
+  const value = Number(input)
+  
+  if (input.length != 0 && Number.isNaN(value)) {
+    return new Error(`Should be number like 1.123, got ${input}`);
+  }
+
+  if (input.length > MAX_FLOAT_INPUT_LENGTH) {
+    return new Error(`Too large ${filedName} input. Try shorter numbers`)
+  }
+  
+  if (input.length === 0) {
+    return value;
+  }
+
+  return value
 }
 
