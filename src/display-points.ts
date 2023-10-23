@@ -19,11 +19,15 @@ type AreaCheckResponse = {
 };
 
 export async function initPoints() {
-  const points = await requestPoints()
-  updatePoints(points)
+  try {
+    const points = await requestPoints()
+    updatePoints(points)
+  } catch (_) {
+    updatePoints()
+  }
 }
 
-export function updatePlot(points: AreaCheckResult[]) {
+export function updatePlot(points: AreaCheckResult[] = []) {
   reDraw();
   for (const { point, result } of points) {
     // draw last point in front most plane
@@ -64,8 +68,8 @@ export async function requestPoints() {
 }
 
 export function updatePoints(points?: AreaCheckResult[]) {
+  updatePlot(points)
   if (points) {
-    updatePlot(points)
     updateTable(points, tableBody)
   }
 }
