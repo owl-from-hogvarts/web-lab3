@@ -27,4 +27,15 @@ function createErrorElement(error: Error) {
   return errorElement
 }
 
-export const errorDisplayer = new ErrorDisplayer(document.querySelector("modal > errors-container")!)
+const errorDisplayer = new ErrorDisplayer(document.querySelector("modal > errors-container")!)
+
+export function displayError(message: string = "Something went wrong! Please contact the developer", element?: HTMLInputElement) {
+  element?.setCustomValidity(message)
+  errorDisplayer.push(new Error(message))
+}
+
+export function clearError(element: HTMLInputElement) {
+  element.setCustomValidity("")
+}
+
+

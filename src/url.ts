@@ -3,3 +3,5 @@ export function mergeQueryParams(initialParams: URLSearchParams, updatedParams: 
     initialParams.set(key, value)
   }
 }
+
+export const url = new URL(document.URL)
