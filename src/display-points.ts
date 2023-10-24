@@ -18,12 +18,12 @@ type AreaCheckResponse = {
   };
 };
 
-export async function initPoints() {
+export async function initPoints(currentScale: number) {
   try {
     const points = await requestPoints()
-    updatePoints(points)
+    updatePoints(currentScale, points)
   } catch (_) {
-    updatePoints()
+    updatePoints(currentScale)
   }
 }
 
@@ -73,8 +73,8 @@ export async function requestPoints() {
   return points;
 }
 
-export function updatePoints(points?: AreaCheckResult[]) {
-  updatePlot(points)
+export function updatePoints(currentScale: number, points?: AreaCheckResult[]) {
+  updatePlot(points?.filter(point => point.point.scale === currentScale))
   if (points) {
     updateTable(points, tableBody)
   }

@@ -1,4 +1,4 @@
-import { clearError } from "./error.js";
+import { clearError, displayError } from "./error.js";
 import { Point, TPoint, closeToValueInSet, toPreciseString } from "./point.js";
 import { mergeQueryParams } from "./url.js";
 
@@ -14,7 +14,7 @@ export class PointInputData {
   public point: Point
   public scale: number = 1
   
-  constructor({x, y, scale = 1}: Partial<TPoint>) {
+  constructor({x, y, scale = 1}: Partial<TPoint> = {}) {
     this.point = new Point(x, y) ?? new Point()
     this.setScale(scale);
   }
@@ -45,7 +45,15 @@ export function init(url?: URL) {
     scale: Number(url.searchParams.get(SCALE_URL_ID)) || undefined
   } : {}
 
-  const formData = new PointInputData(urlParams)
+  let formData = new PointInputData()
+  try { 
+    formData = new PointInputData(urlParams)
+  } catch (e) {
+    // just ignore
+    // stick with default values
+    // const error = e as Error
+    // displayError(error.message);
+  }
   updateX(formData)
   updateY(formData)
   update(formData)

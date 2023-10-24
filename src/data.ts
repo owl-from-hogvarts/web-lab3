@@ -6,7 +6,7 @@ import { buildEndpointUrl, displayKnownError, displaySimpleRequestError, isReque
 import { initPoints, requestPoints, updatePoints } from "./display-points.js";
 
 const state = init(url)
-initPoints()
+initPoints(state.scale)
 
 const DEBOUNCE_TIME = 400
 
@@ -53,7 +53,11 @@ scaleInput.addEventListener("click", (event) => {
   const scale = Number(target.value)
   state.setScale(scale);
 
-  update(state)
+  update(state);
+  (async () => {
+    const points = await requestPoints()
+    updatePoints(scale, points)
+  })()
 })
 
 form.addEventListener("submit", event => {
@@ -81,7 +85,7 @@ form.addEventListener("submit", event => {
     }
 
     const points = await requestPoints()
-    updatePoints(points)
+    updatePoints(state.scale, points)
   })
 })
 
