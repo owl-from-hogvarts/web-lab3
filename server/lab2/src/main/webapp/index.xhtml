@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html
+  xmlns:p="http://primefaces.org/ui"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script type="module" defer="" src="./frontend/build/clock.js"></script>
+    <link rel="stylesheet" href="./frontend/styles.css" />
+  </head>
+  <body class="full">
+    <header>
+      <author>
+        <name> Тернавский Костя </name>
+        <info>
+          <group> P3206 </group>
+          <variant> 1815 </variant>
+        </info>
+      </author>
+    </header>
+    <main>
+      <centered>
+        <clock id="main-clock">7:00:00</clock>
+        <h:form>
+          <h:commandButton
+            styleClass="rounded"
+            id="redirect"
+            action="goToPage2"
+            value="Go to intersector!"
+          />
+        </h:form>
+      </centered>
+    </main>
+  </body>
+</html>

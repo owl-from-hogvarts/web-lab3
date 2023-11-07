@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html
+  lang="en"
+  xmlns:p="http://primefaces.org/ui"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+  <h:head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./frontend/styles.css" />
+    <script type="module" defer="" src="./frontend/build/index.js"></script>
+  </h:head>
+  <h:body>
+    <header>
+      <author>
+        <name> Тернавский Костя </name>
+        <info>
+          <group> P3206 </group>
+          <variant> 1815 </variant>
+        </info>
+      </author>
+      <h:form>
+        <h:commandButton
+          id="redirect"
+          action="goToPage1"
+          value="Back to future of web!"
+        />
+      </h:form>
+    </header>
+    <main>
+      <centered>
+        <plot class="rounded">
+          <canvas id="plot" width="480" height="480"></canvas>
+        </plot>
+        <h:form id="intersect-input-form">
+          <settings>
+            <field>
+              <label>Point(X):</label>
+              <content>
+                <p:spinner
+                  id="input-point-x"
+                  name="pointX"
+                  value="#{userFormInput.x}"
+                  min="-3"
+                  max="3"
+                  stepFactor="0.01"
+                >
+              </p:spinner>
+              </content>
+            </field>
+            <field>
+              <label for="input-point-y">Point(Y):</label>
+              <content>
+                <h:inputText
+                  placeholder="Should be between -5 and 3"
+                  class="rounded"
+                  type="text"
+                  id="input-point-y"
+                  name="pointY"
+                  validator="#{userFormInput.validateNonNull}"
+                  value="#{userFormInput.y}"
+                >
+                  <f:validateDoubleRange minimum="-5" maximum="3" />
+                  <f:ajax execute="input-point-y" render="@form" />
+                </h:inputText>
+                <h:message
+                  id="y-select-error"
+                  for="input-point-y"
+                  class="error rounded"
+                />
+              </content>
+            </field>
+            <field id="scale-input">
+              <label>Scale</label>
+              <content>
+                <h:panelGrid columns="1" style="width: 100%;">
+                    <h:outputText
+                    id="scale-output"
+                    value="#{userFormInput.scale}"
+                    />
+                  <h:inputHidden
+                    id="sliderTxtMin"
+                    value="#{userFormInput.scale}"
+                  />
+                  <p:slider
+                    for="sliderTxtMin"
+                    minValue="2"
+                    maxValue="5"
+                    step="0.5"
+                    display="scale-output"
+                  >
+                  <!-- this is primefaces bug -->
+                  <p:ajax event="slideEnd" update="points-list-js" process="@form"/>
+                </p:slider>
+                </h:panelGrid>
+              </content>
+            </field>
+            <h:commandButton
+              id="submit-button"
+              value="Process"
+              styleClass="rounded"
+            >
+              <f:ajax
+                execute="@form"
+                listener="#{areaDataBean.proposePoint(userFormInput.x,
+                    userFormInput.y, userFormInput.scale)}"
+                render="@form points-list-js"
+              />
+            </h:commandButton>
+          </settings>
+        </h:form>
+        <results-container class="rounded">
+          <table id="results-table">
+            <thead>
+              <tr>
+                <th>Point(x)</th>
+                <th>Point(y)</th>
+                <th>Scale</th>
+                <th>Result</th>
+                <th>Current Time</th>
+                <th>Calculation Time</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </results-container>
+      </centered>
+    </main>
+    <modal>
+      <errors-container> </errors-container>
+    </modal>
+    <h:form id="graphSelect">
+      <h:inputHidden id="graph-x" value="#{userFormInput.x}" />
+      <h:inputHidden id="graph-y" value="#{userFormInput.y}" />
+      <p:remoteCommand name="updateBeanValues" update="graph-x graph-y intersect-input-form points-list-js"
+                       action="#{areaDataBean.proposePoint(userFormInput.x, userFormInput.y, userFormInput.scale)}"/>
+    </h:form>
+    <!-- use panel group to not trigger page reload on every scale change -->
+    <p:outputPanel id="points-list-js">
+      <script>
+        points = [
+            <ui:repeat var="result" value="#{areaDataBean.points}">
+            {
+              point: {
+                x: #{result.point.x},
+                y: #{result.point.y},
+                scale: #{result.point.scale}, 
+              },
+              result: #{result.result},
+              calculationTime: #{result.calculationTime},
+              calculatedAt: '#{result.calculatedAt}',
+            },
+            </ui:repeat>
+        ];
+        scale = #{userFormInput.scale};
+
+        updatePoints(scale, points)
+      </script>
+    </p:outputPanel>
+  </h:body>
+</html>

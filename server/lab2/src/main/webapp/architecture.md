@@ -1,15 +1,11 @@
 
+# Backend
 
-## Backend
-ControllerServlet receives request. Checks whether it contains params or not
+Bean does not actually store data. It acts like a thin wrapper around database. We want our database to be single source of truth.
 
-If not, passes request to index.jsp
+## Beans
 
-Pass request to areaCheck only if request has params *and* `isJson` set.
+Single session scoped bean contains current values of input form.
 
-## Frontend
-
-On page load, request data from backend. If client encounters url params, right away send additional request to set new point.
-
-Difference between AreaCheck and JSP is that AreaCheck return not just a form, but a table 
+On form submit, the bean is send to application scoped one. It performs addition to database.
 

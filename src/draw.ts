@@ -1,4 +1,4 @@
-import { TPoint } from "./point";
+import { TPoint } from "./point.js";
 
 const canvas = document.querySelector("#plot") as HTMLCanvasElement;
 const context = canvas.getContext("2d")!;
@@ -26,13 +26,13 @@ export function reDraw() {
   context.translate(canvasWidth/2, canvasHeight/2)
   context.scale(1, -1)
   context.save()
-  drawCircle(context)
+  drawRect(context)
   context.rotate(Math.PI)
-  drawTriangle(context, AXIS_HALF_UNIT)
+  drawCircle(context)
   context.restore()
   context.save()
-  context.scale(-1, 1)
-  drawRect(context)
+  context.scale(1, -1)
+  drawTriangle(context, AXIS_UNIT)
   context.restore()
   
   context.restore()
@@ -88,7 +88,7 @@ function drawRect(context: CanvasRenderingContext2D) {
 
   const rect = new Path2D()
   rect.moveTo(0,0)
-  rect.rect(0,0, AXIS_HALF_UNIT, AXIS_UNIT)
+  rect.rect(0,0, AXIS_UNIT, AXIS_UNIT)
 
   context.fillStyle = FIGURE_COLOR
   context.fill(rect)

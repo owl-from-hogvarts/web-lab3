@@ -11,7 +11,7 @@ export function insertRow(tableBody: HTMLTableElement, {x, y, scale}: TPoint, re
   const scale_cell = `<td>${scale}</td>`
   const result_cell = `<td>${result}</td>`
   const current_time_cell = `<td>${current_time}</td>`
-  const execution_time_cell = `<td>${execution_time} ms</td>`
+  const execution_time_cell = `<td>${execution_time} μs</td>`
 
   const cells = [x_cell, y_cell, scale_cell, result_cell, current_time_cell, execution_time_cell]
   for (const cell of cells) {

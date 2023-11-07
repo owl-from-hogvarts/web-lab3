@@ -1,0 +1,5 @@
+db_path = "jdbc:postgresql:studs"
+user = "s368899"
+password = "Q17qDM95dp7SaEK1"
+
+

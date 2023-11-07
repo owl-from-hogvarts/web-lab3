@@ -1,31 +1,15 @@
 import { reDraw, drawPoint } from "./draw.js";
 import { TPoint } from "./point.js";
 import { clearTable, insertRow } from "./table.js";
-import { buildEndpointUrl, isRequestOk, displaySimpleRequestError, TErrorResponse, displayKnownError } from "./url.js";
 
 const tableBody = document.querySelector("#results-table > tbody") as HTMLTableElement
 
-type AreaCheckResult = {
+export type AreaCheckResult = {
   point: TPoint;
   result: boolean;
   calculationTime: number;
   calculatedAt: number;
 };
-
-type AreaCheckResponse = {
-  user: {
-    points: AreaCheckResult[];
-  };
-};
-
-export async function initPoints(currentScale: number) {
-  try {
-    const points = await requestPoints()
-    updatePoints(currentScale, points)
-  } catch (_) {
-    updatePoints(currentScale)
-  }
-}
 
 export function updatePlot(points: AreaCheckResult[] = []) {
   reDraw();
@@ -51,26 +35,6 @@ export function updateTable(
       calculationTime.toString()
     );
   }
-}
-
-export async function requestPoints() {
-  // make separate request to update points data
-  const pointsRequestUrl = buildEndpointUrl();
-  const response = await fetch(pointsRequestUrl, { method: "GET" });
-  if (!isRequestOk(response)) {
-    if (response.status !== 501) {
-      displaySimpleRequestError(response.status);
-      return;
-    }
-
-    const error = await response.json() as TErrorResponse
-    displayKnownError(error)
-    return;
-  }
-
-  const { points } = ((await response.json()) as AreaCheckResponse).user;
-
-  return points;
 }
 
 export function updatePoints(currentScale: number, points?: AreaCheckResult[]) {

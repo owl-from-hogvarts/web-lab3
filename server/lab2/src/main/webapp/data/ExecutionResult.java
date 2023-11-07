@@ -1,13 +1,16 @@
 package webapp.data;
 
-import java.beans.JavaBean;
 import java.io.Serializable;
 import java.time.Instant;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.inject.Named;
 
-@JavaBean
-public class AreaData implements Serializable {
+
+/**
+ * 
+ */
+@Named
+public class ExecutionResult implements Serializable {
     private Point point;
     public Point getPoint() {
         return point;
@@ -19,10 +22,9 @@ public class AreaData implements Serializable {
 
     private boolean result;
     private long calculationTime;
-    @JsonFormat(shape = JsonFormat.Shape.NUMBER, without = JsonFormat.Feature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS)
     private Instant calculatedAt;
 
-    public AreaData() {
+    public ExecutionResult() {
         super();
     }
 
@@ -69,7 +71,7 @@ public class AreaData implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        AreaData other = (AreaData) obj;
+        ExecutionResult other = (ExecutionResult) obj;
         if (point == null) {
             if (other.point != null)
                 return false;

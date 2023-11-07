@@ -2,33 +2,51 @@ package webapp.data;
 
 import java.io.Serializable;
 
-public class Point implements Serializable {
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.validator.ValidatorException;
+import jakarta.inject.Named;
+
+@Named
+@SessionScoped
+public class UserFormInput implements Serializable {
   private double x;
   private double y;
-  private double scale;
-  public Point(double x, double y, double scale) {
-    this.x = x;
-    this.y = y;
-    this.scale = scale;
-  }
+  private double scale = 2.0;
+
   public double getX() {
     return x;
   }
+
   public void setX(double x) {
     this.x = x;
   }
+
   public double getY() {
     return y;
   }
+
   public void setY(double y) {
+    System.out.println("new value of y is " + y);
     this.y = y;
   }
+
   public double getScale() {
     return scale;
   }
+
   public void setScale(double scale) {
+    System.out.println("new value of scale is " + scale);
     this.scale = scale;
   }
+
+  @Override
+  public String toString() {
+    return "UserFormInputBean [x=" + x + ", y=" + y + ", scale=" + scale + "]";
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -42,6 +60,7 @@ public class Point implements Serializable {
     result = prime * result + (int) (temp ^ (temp >>> 32));
     return result;
   }
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj)
@@ -50,7 +69,7 @@ public class Point implements Serializable {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    Point other = (Point) obj;
+    UserFormInput other = (UserFormInput) obj;
     if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
       return false;
     if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
@@ -59,5 +78,12 @@ public class Point implements Serializable {
       return false;
     return true;
   }
-}
 
+    public void validateNonNull(FacesContext facesContext,
+                                UIComponent uiComponent, Object o) {
+        if (o == null) {
+            FacesMessage message = new FacesMessage("Please, input Y!");
+            throw new ValidatorException(message);
+        }
+    }
+}
